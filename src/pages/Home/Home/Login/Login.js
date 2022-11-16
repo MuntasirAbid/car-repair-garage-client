@@ -1,5 +1,6 @@
-
-import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import { FaFacebookF, FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { getAuth, GithubAuthProvider, GoogleAuthProvider, sendPasswordResetEmail, signInWithPopup } from 'firebase/auth';
 import React, { useContext, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import img from '../../../../assets/images/login/login.svg'
@@ -10,9 +11,10 @@ const Login = () => {
 
     const auth = getAuth(app);
 
+    const [error, setError] = useState('');
     const [userEmail, setUserEmail] = useState('');
 
-    const { signIn, setLoading } = useContext(AuthContext);
+    const { signIn, setLoading, providerLogin } = useContext(AuthContext);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -29,17 +31,38 @@ const Login = () => {
         signIn(email, password)
             .then(result => {
                 const user = result.user;
-                console.log(user);
+                // console.log(user);
                 form.reset();
                 navigate(from, { replace: true });
             })
             .catch(error => {
-                console.error('error', error);
+                console.error(error);
+                setError(error.message);
             })
             .finally(() => {
                 setLoading(false);
             })
 
+    }
+
+    const googleProvider = new GoogleAuthProvider();
+    const githubProvider = new GithubAuthProvider();
+
+    const handleGoogleSignIn = () => {
+        providerLogin(googleProvider)
+            .then(result => {
+                const user = result.user;
+                navigate(from, { replace: true });
+            })
+            .catch(error => console.error(error));
+    }
+
+    const handleGithubSignIn = () => {
+        providerLogin(githubProvider)
+            .then(result => {
+                const user = result.user;
+            })
+            .catch(error => console.error(error));
     }
 
     const handleEmailBlur = event => {
@@ -86,14 +109,28 @@ const Login = () => {
                             </label>
                             <input type="password" name="password" placeholder="password" className="input input-bordered" />
                             <label className="label">
-                                <p>Forget Password? <Link onClick={handleForgetPassword} className='text-orange-600 font-bold'>Reset Password</Link></p>
+                                <p className="mt-3">Forget Password? <Link onClick={handleForgetPassword} className='text-orange-600 font-bold'>Reset Password</Link></p>
                             </label>
                         </div>
-                        <div className="form-control mt-6">
-                            <input className="btn btn-primary" type="submit" value="Login"></input>
+                        <div className="form-control mt-3">
+                            <p className='text-error mb-5'>
+                                {error}
+                            </p>
+                            <input className="btn bg-red-500 text-white border-0" type="submit" value="Login"></input>
+                        </div>
+                        <div className='text-center'>
+                            <p className="font-semibold" >Or Sign In With</p>
+                            <div className="flex justify-center mt-7">
+                                <button > <FcGoogle onClick={handleGoogleSignIn} style={{ height: '50px', width: '40px' }}
+                                ></FcGoogle></button>
+                                <FaFacebookF style={{ height: '40px', width: '40px' }} className="mx-5"></FaFacebookF>
+                                <button onClick={handleGithubSignIn}> <FaGithub style={{ height: '40px', width: '40px' }}></FaGithub></button>
+                            </div>
+
                         </div>
                     </form>
-                    <p className='pl-9'>New to our website? <Link className='text-orange-600 font-bold' to='/register'>Sign Up</Link></p>
+
+                    <p className='text-center mt-5'>New to our website? <Link className='text-orange-600 font-bold' to='/register'>Sign Up</Link></p>
                 </div>
             </div>
         </div>

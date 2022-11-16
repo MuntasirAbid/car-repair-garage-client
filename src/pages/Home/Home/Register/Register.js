@@ -78,7 +78,7 @@ const Register = () => {
                         <p className='text-error'>{passwordError}</p>
                         {success && <p className='text-success py-3'>User Created Successfully </p>}
                         <div className="form-control mt-6">
-                            <input className="btn btn-primary" type="submit" value="SignUp"></input>
+                            <input className="btn bg-red-500 text-white border-0" type="submit" value="SignUp"></input>
                         </div>
                     </form>
                     <p className='px-9'>Already have an account? <Link className='text-orange-600 font-bold' to="/login">Login</Link></p>

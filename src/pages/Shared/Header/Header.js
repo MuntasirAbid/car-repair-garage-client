@@ -1,13 +1,57 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../../assets/logo.svg';
+import { FaUserAlt } from 'react-icons/fa';
+import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
 
 const Header = () => {
 
+    const { user, logOut } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        logOut()
+            .then(() => { })
+            .catch(error => console.error(error))
+    }
+
     const menuItems = <>
         <li className='font-semibold'><Link to='/'>Home</Link></li>
-        <li className='font-semibold'><Link to='/login'>Login</Link></li>
-        <li className='font-semibold'><Link to='/register'>Sign Up</Link></li>
+        <>
+            {
+                user?.uid ?
+                    <>
+                        <li className='font-semibold'><Link to='/orders'>Orders</Link></li>
+
+                        <li className='font-semibold'>
+                            <span>{user?.displayName}</span>
+                            <Link onClick={handleLogout}>Log Out</Link>
+                        </li>
+
+                    </>
+                    :
+                    <>
+                        <li className='font-semibold'><Link to='/login'>Login</Link></li>
+                        <li className='font-semibold'><Link to='/register'>Sign Up</Link></li>
+                    </>
+
+            }
+            {
+                user?.photoURL ?
+                    <>
+                        <li>
+                            <img className='rounded-full' style={{ height: "70px" }}
+
+                                src={user?.photoURL} alt="" />
+                        </li>
+                    </>
+                    :
+                    <>
+                        <li>
+                            <FaUserAlt></FaUserAlt>
+                        </li>
+                    </>
+            }
+        </>
     </>
 
     return (
