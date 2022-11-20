@@ -1,6 +1,6 @@
 import { FaFacebookF, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { getAuth, GithubAuthProvider, GoogleAuthProvider, sendPasswordResetEmail, signInWithPopup } from 'firebase/auth';
+import { getAuth, GithubAuthProvider, GoogleAuthProvider, sendPasswordResetEmail } from 'firebase/auth';
 import React, { useContext, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import img from '../../../../assets/images/login/login.svg'
@@ -31,9 +31,31 @@ const Login = () => {
         signIn(email, password)
             .then(result => {
                 const user = result.user;
-                // console.log(user);
+                console.log(user.email);
+
+                const currentUser = {
+                    email: user.email
+                }
+                console.log(currentUser);
+
+                //get jwt token
+                fetch('http://localhost:9000/jwt', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(currentUser)
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data)
+                        // local storage is the easiest but not the best place to store the token
+                        localStorage.setItem('secretToken', data.token);
+                        navigate(from, { replace: true });
+                    })
+
                 form.reset();
-                navigate(from, { replace: true });
+
             })
             .catch(error => {
                 console.error(error);
